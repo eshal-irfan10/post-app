@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beautiful Form</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #ff7e5f, #feb47b);
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+
+    .form-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 30px;
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      border-color: #ff7e5f;
+      outline: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background-color: #ff7e5f;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .submit-btn:hover {
+      background-color: #e06b50;
+    }
+
+    .switch-btn {
+      margin-top: 10px;
+      text-align: center;
+      cursor: pointer;
+      color: #ff7e5f;
+    }
+
+    .post-container {
+      width: 100%;
+      max-width: 400px;
+      margin-top: 30px;
+    }
+
+    .post-card {
+      background-color: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 15px;
+    }
+
+    .post-card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .post-caption {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .post-image-url {
+      font-size: 14px;
+      color: #888;
+    }
+
+    .image-preview {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .image-preview img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .logout-btn {
+      width: 100%;
+      background-color: #ff7e5f;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: #e06b50;
+    }
+  </style>
+</head>
+<body>
+  <!-- Signup Form -->
+  <div class="form-container" id="signupForm">
+    <h2>Sign Up</h2>
+    <form>
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Enter your full name">
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password">
+      </div>
+      <button type="submit" class="submit-btn">Sign Up</button>
+    </form>
+    <div class="switch-btn" id="goToLogin">Already have an account? Login here.</div>
+  </div>
+
+  <!-- Login Form -->
+  <div class="form-container" id="loginForm" style="display: none;">
+    <h2>Login</h2>
+    <form>
+      <div class="form-group">
+        <label for="loginEmail">Email Address</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password">
+      </div>
+      <button type="submit" class="submit-btn">Login</button>
+    </form>
+    <div class="switch-btn" id="goToSignup">Don't have an account? Sign up here.</div>
+  </div>
+
+  <!-- Post Form (After Login) -->
+  <div class="form-container" id="postForm" style="display: none;">
+    <h2>Create Post</h2>
+    <form id="createPostForm">
+      <div class="form-group">
+        <label for="caption">Caption</label>
+        <input type="text" id="caption" placeholder="Enter caption">
+      </div>
+      <div class="form-group">
+        <label for="imageUrl">Image URL</label>
+        <input type="url" id="imageUrl" placeholder="Enter image URL">
+      </div>
+      <div class="form-group">
+        <label for="fileInput">Choose File</label>
+        <input type="file" id="fileInput">
+        <span id="fileName">No file chosen</span>
+      </div>
+      <button type="submit" class="submit-btn">Add Post</button>
+      <button type="button" class="logout-btn" id="logoutBtn">Logout</button>
+    </form>
+    <div class="image-preview" id="imagePreview"></div>
+  </div>
+
+  <!-- Post Display Area -->
+  <div class="post-container" id="postContainer"></div>
+
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHpExY1Mo0cOJ3BzTw2ozwFtr60XZsaqM",
+      authDomain: "apps-6c4e3.firebaseapp.com",
+      projectId: "apps-6c4e3",
+      storageBucket: "apps-6c4e3.firebasestorage.app",
+      messagingSenderId: "414302180760",
+      appId: "1:414302180760:web:b88f279fd7cabf06e047ed",
+      measurementId: "G-EWH9310VMS"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Signup Form Submission
+    document.querySelector("#signupForm form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const fullName = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // Register user
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("User registered:", user);
+          alert(`Welcome, ${fullName}!`);
+
+          // Redirect to login form
+          document.getElementById("signupForm").style.display = "none";
+          document.getElementById("loginForm").style.display = "block";
+        })
+        .catch((error) => {
+          console.error("Error:", error.message);
+          alert(error.message);
+        });
+    });
+
+    // Login Form Submission
+    document.querySelector("#loginForm form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      // Sign in user
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("User logged in:", user);
+
+          // Switch to post form
+          document.getElementById("loginForm").style.display = "none";
+          document.getElementById("postForm").style.display = "block";
+        })
+        .catch((error) => {
+          console.error("Error:", error.message);
+          alert(error.message);
+        });
+    });
+
+    // Switch between login and signup forms
+    document.getElementById("goToLogin").addEventListener("click", function () {
+      document.getElementById("signupForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+    });
+    document.getElementById("goToSignup").addEventListener("click", function () {
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("signupForm").style.display = "block";
+    });
+
+    // Post Creation and Display
+    document.querySelector("#createPostForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const caption = document.getElementById("caption").value;
+      const imageUrl = document.getElementById("imageUrl").value;
+      const fileInput = document.getElementById("fileInput").files[0];
+
+      let image = imageUrl ? imageUrl : (fileInput ? URL.createObjectURL(fileInput) : null);
+
+      if (image) {
+        const postCard = document.createElement("div");
+        postCard.classList.add("post-card");
+
+        // Display image
+        const img = document.createElement("img");
+        img.src = image;
+        postCard.appendChild(img);
+
+        // Display caption
+        const captionElem = document.createElement("p");
+        captionElem.classList.add("post-caption");
+        captionElem.textContent = caption || "No caption provided";
+        postCard.appendChild(captionElem);
+
+        // Display image URL (if any)
+        if (imageUrl) {
+          const imageUrlElem = document.createElement("p");
+          imageUrlElem.classList.add("post-image-url");
+          imageUrlElem.textContent = imageUrl;
+          postCard.appendChild(imageUrlElem);
+        }
+
+        // Add post to the container
+        document.getElementById("postContainer").appendChild(postCard);
+
+        // Reset form
+        document.getElementById("createPostForm").reset();
+        document.getElementById("imagePreview").innerHTML = "";
+      } else {
+        alert("Please provide an image.");
+      }
+    });
+
+    // Show image preview when a file is selected
+    document.getElementById("fileInput").addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      const previewContainer = document.getElementById("imagePreview");
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          const imgElement = document.createElement("img");
+          imgElement.src = event.target.result;
+          previewContainer.innerHTML = "";
+          previewContainer.appendChild(imgElement);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Logout functionality
+    document.getElementById("logoutBtn").addEventListener("click", function () {
+      signOut(auth).then(() => {
+        console.log("User logged out");
+
+        // Redirect to signup page
+        document.getElementById("postForm").style.display = "none";
+        document.getElementById("signupForm").style.display = "block";
+      }).catch((error) => {
+        console.error("Error:", error.message);
+      });
+    });
+  </script>
+</body>
+</html>
